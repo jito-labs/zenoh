@@ -22,8 +22,9 @@ use crate::{
         codec::Zenoh080Routing,
         protocol::linkstate::LinkStateList,
         routing::{
-            dispatcher::face::Face,
+            dispatcher::face::{Face, InterestState},
             router::{compute_data_routes, compute_query_routes, RoutesIndexes},
+            RoutingContext,
         },
     },
     runtime::Runtime,
@@ -49,8 +50,9 @@ use std::{
 use zenoh_config::{unwrap_or_default, ModeDependent, WhatAmI, WhatAmIMatcher};
 use zenoh_protocol::network::{
     declare::{QueryableId, SubscriberId},
-    interest::InterestId,
-    Oam,
+    ext::{NodeIdType, QoSType},
+    interest::{InterestId, InterestOptions},
+    Declare, DeclareBody, DeclareFinal, Oam,
 };
 use zenoh_protocol::{
     common::ZExtBody,
@@ -158,8 +160,31 @@ impl HatBaseTrait for HatCode {
                 net.add_link(transport.clone());
             }
         }
+        if face.state.whatami == WhatAmI::Peer {
+            get_mut_unchecked(&mut face.state).local_interests.insert(
+                0,
+                InterestState {
+                    options: InterestOptions::ALL,
+                    res: None,
+                    finalized: false,
+                },
+            );
+        }
+
         pubsub_new_face(tables, &mut face.state);
         queries_new_face(tables, &mut face.state);
+
+        if face.state.whatami == WhatAmI::Peer {
+            face.state
+                .primitives
+                .send_declare(RoutingContext::new(Declare {
+                    interest_id: Some(0),
+                    ext_qos: QoSType::default(),
+                    ext_tstamp: None,
+                    ext_nodeid: NodeIdType::default(),
+                    body: DeclareBody::DeclareFinal(DeclareFinal),
+                }));
+        }
         Ok(())
     }
 

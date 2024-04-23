@@ -18,7 +18,7 @@ use crate::net::routing::dispatcher::resource::{NodeId, Resource, SessionContext
 use crate::net::routing::dispatcher::tables::Tables;
 use crate::net::routing::dispatcher::tables::{QueryTargetQabl, QueryTargetQablSet, RoutingExpr};
 use crate::net::routing::hat::{CurrentFutureTrait, HatQueriesTrait, Sources};
-use crate::net::routing::router::RoutesIndexes;
+use crate::net::routing::router::{update_query_routes_from, RoutesIndexes};
 use crate::net::routing::{RoutingContext, PREFIX_LIVELINESS};
 use ordered_float::OrderedFloat;
 use std::borrow::Cow;
@@ -322,6 +322,10 @@ pub(super) fn queries_new_face(tables: &mut Tables, face: &mut Arc<FaceState>) {
             }
         }
     }
+    // recompute routes
+    // TODO: disable query routes and recompute them in parallel to avoid holding
+    // tables write lock for a long time on peer conenction.
+    update_query_routes_from(tables, &mut tables.root_res.clone());
 }
 
 lazy_static::lazy_static! {
@@ -539,6 +543,23 @@ impl HatQueriesTrait for HatCode {
                 return EMPTY_ROUTE.clone();
             }
         };
+
+        for face in tables.faces.values().filter(|f| {
+            f.whatami == WhatAmI::Peer
+                && !f
+                    .local_interests
+                    .get(&0)
+                    .map(|i| i.finalized)
+                    .unwrap_or(true)
+        }) {
+            let key_expr = Resource::get_best_key(expr.prefix, expr.suffix, face.id);
+            route.push(QueryTargetQabl {
+                direction: (face.clone(), key_expr.to_owned(), NodeId::default()),
+                complete: 0,
+                distance: 0.5,
+            });
+        }
+
         let res = Resource::get_resource(expr.prefix, expr.suffix);
         let matches = res
             .as_ref()
