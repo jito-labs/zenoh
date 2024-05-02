@@ -20,6 +20,7 @@
 mod adminspace;
 pub mod orchestrator;
 
+use self::orchestrator::StartConditions;
 use super::primitives::DeMux;
 use super::routing;
 use super::routing::router::Router;
@@ -69,6 +70,7 @@ pub(crate) struct RuntimeState {
     task_controller: TaskController,
     #[cfg(all(feature = "unstable", feature = "plugins"))]
     plugins_manager: Mutex<PluginsManager>,
+    start_conditions: Arc<StartConditions>,
 }
 
 pub struct WeakRuntime {
@@ -177,6 +179,7 @@ impl RuntimeBuilder {
                 task_controller: TaskController::default(),
                 #[cfg(all(feature = "unstable", feature = "plugins"))]
                 plugins_manager: Mutex::new(plugins_manager),
+                start_conditions: Arc::new(StartConditions::default()),
             }),
         };
         *handler.runtime.write().unwrap() = Runtime::downgrade(&runtime);
@@ -370,6 +373,10 @@ impl Runtime {
 
     pub fn get_cancellation_token(&self) -> CancellationToken {
         self.state.task_controller.get_cancellation_token()
+    }
+
+    pub(crate) fn start_conditions(&self) -> &Arc<StartConditions> {
+        &self.state.start_conditions
     }
 }
 
