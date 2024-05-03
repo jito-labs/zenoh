@@ -3119,7 +3119,7 @@ dependencies = [
 [[package]]
 name = "rustls"
 version = "0.22.4"
-source = "git+https://github.com/jito-labs/rustls.git?branch=v0.22.4-jito#c6af12bb933f6486129705a1496391a214632a2a"
+source = "git+https://github.com/jito-labs/rustls.git?branch=v0.22.4-jito#9d5fc35d42e80b1be05f570e934492d91007e1b8"
 dependencies = [
  "log",
  "ring 0.17.6",

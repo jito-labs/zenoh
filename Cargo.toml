@@ -207,7 +207,6 @@ zenoh-task = { version = "0.11.0-rc.2", path = "commons/zenoh-task" }
 [patch.crates-io]
 rustls = { branch = "v0.22.4-jito", git = "https://github.com/jito-labs/rustls.git" }
 
-
 [profile.dev]
 debug = true
 opt-level = 0
