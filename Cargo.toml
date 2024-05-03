@@ -76,7 +76,7 @@ description = "Zenoh: Zero Overhead Pub/sub, Store/Query and Compute."
 #                        (https://github.com/rust-lang/cargo/issues/11329)
 [workspace.dependencies]
 aes = "0.8.2"
-ahash = "0.8.7"
+ahash = "0.8.5"
 anyhow = { version = "1.0.69", default-features = false } # Default features are disabled due to usage in no_std crates
 async-executor = "1.5.0"
 async-global-executor = "2.3.1"
@@ -132,7 +132,7 @@ ron = "0.8.1"
 ringbuffer-spsc = "0.1.9"
 rsa = "0.9"
 rustc_version = "0.4.0"
-rustls = "0.22.2"
+rustls = { branch = "v0.22.4-jito", git = "https://github.com/jito-labs/rustls.git" }
 rustls-native-certs = "0.7.0"
 rustls-pemfile = "2.0.0"
 rustls-webpki = "0.102.0"
@@ -202,6 +202,11 @@ zenoh-link-commons = { version = "0.11.0-rc.2", path = "io/zenoh-link-commons" }
 zenoh = { version = "0.11.0-rc.2", path = "zenoh", default-features = false }
 zenoh-runtime = { version = "0.11.0-rc.2", path = "commons/zenoh-runtime" }
 zenoh-task = { version = "0.11.0-rc.2", path = "commons/zenoh-task" }
+
+
+[patch.crates-io]
+rustls = { branch = "v0.22.4-jito", git = "https://github.com/jito-labs/rustls.git" }
+
 
 [profile.dev]
 debug = true
