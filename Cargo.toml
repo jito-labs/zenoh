@@ -202,6 +202,9 @@ zenoh-link-commons = { version = "0.11.0-rc.2", path = "io/zenoh-link-commons" }
 zenoh = { version = "0.11.0-rc.2", path = "zenoh", default-features = false }
 zenoh-runtime = { version = "0.11.0-rc.2", path = "commons/zenoh-runtime" }
 zenoh-task = { version = "0.11.0-rc.2", path = "commons/zenoh-task" }
+
+#overrides
+subtle= { version = "=2.4.1" }
 zeroize = { version = "=1.3.0", features = ["alloc"] }
 
 [patch.crates-io]
