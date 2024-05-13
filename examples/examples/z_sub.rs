@@ -12,7 +12,7 @@
 //   ZettaScale Zenoh Team, <zenoh@zettascale.tech>
 //
 use clap::Parser;
-use zenoh::config::{Config, TransportConf};
+use zenoh::config::{CompressionUnicastConf, Config, ModeDependentValue, QoSUnicastConf, TransportConf};
 use zenoh::prelude::r#async::*;
 use zenoh_examples::CommonArgs;
 
@@ -23,10 +23,37 @@ async fn main() {
 
     let (mut config, key_expr) = parse_args();
     let mut config = Config::default();
-    config.connect.endpoints=vec![EndPoint::new("tcp", "127.0.0.1:12000", "", "").unwrap()];
+    config.connect.endpoints=vec![EndPoint::new("tcp", "192.168.1.50:12000", "", "").unwrap()];
 
+    // config.connect.timeout_ms = Some(ModeDependentValue::Unique(1_000));
     config.scouting.multicast.set_enabled(Some(false)).unwrap();
+    config
+        .scouting
+        .multicast
+        .set_listen(Some(ModeDependentValue::Unique(false)))
+        .unwrap();
     config.scouting.gossip.set_enabled(Some(false)).unwrap();
+    config
+        .transport
+        .unicast
+        .set_compression(CompressionUnicastConf::new(true).unwrap())
+        .unwrap();
+    config
+        .transport
+        .link
+        .rx
+        .set_buffer_size(134_217_728)
+        .unwrap(); //128MiB
+
+    {
+
+        config.transport.unicast.set_lowlatency(true).unwrap();
+        config
+            .transport
+            .unicast
+            .set_qos(QoSUnicastConf::new(false).unwrap())
+            .unwrap();
+    }
     // config
     //     .insert_json5(
     //         "listen/endpoints",

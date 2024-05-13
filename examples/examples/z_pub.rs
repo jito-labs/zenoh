@@ -13,7 +13,7 @@
 //
 use clap::Parser;
 use std::time::Duration;
-use zenoh::config::Config;
+use zenoh::config::{CompressionUnicastConf, Config, ModeDependentValue, QoSUnicastConf};
 use zenoh::prelude::r#async::*;
 use zenoh_examples::CommonArgs;
 
@@ -27,6 +27,29 @@ async fn main() {
     config.listen.endpoints=vec![EndPoint::new("tcp", "0.0.0.0:12000", "", "").unwrap()];
 config.scouting.multicast.set_enabled(Some(false)).unwrap();
     config.scouting.gossip.set_enabled(Some(false)).unwrap();
+    config.scouting.multicast.set_enabled(Some(false)).unwrap();
+    config
+        .scouting
+        .multicast
+        .set_listen(Some(ModeDependentValue::Unique(false)))
+        .unwrap();
+    config.scouting.gossip.set_enabled(Some(false)).unwrap();
+    config
+        .transport
+        .unicast
+        .set_compression(CompressionUnicastConf::new(true).unwrap())
+        .unwrap();
+
+    {
+
+        config.transport.unicast.set_lowlatency(true).unwrap();
+        config
+            .transport
+            .unicast
+            .set_qos(QoSUnicastConf::new(false).unwrap())
+            .unwrap();
+    }
+
     println!("Opening session...");
     let session = zenoh::open(config).res().await.unwrap();
 
