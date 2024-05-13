@@ -26,24 +26,24 @@ async fn main() {
     config.connect.endpoints=vec![EndPoint::new("tcp", "192.168.1.50:12000", "", "").unwrap()];
 
     // config.connect.timeout_ms = Some(ModeDependentValue::Unique(1_000));
-    config.scouting.multicast.set_enabled(Some(false)).unwrap();
-    config
-        .scouting
-        .multicast
-        .set_listen(Some(ModeDependentValue::Unique(false)))
-        .unwrap();
-    config.scouting.gossip.set_enabled(Some(false)).unwrap();
-    config
-        .transport
-        .unicast
-        .set_compression(CompressionUnicastConf::new(true).unwrap())
-        .unwrap();
-    config
-        .transport
-        .link
-        .rx
-        .set_buffer_size(134_217_728)
-        .unwrap(); //128MiB
+    // config.scouting.multicast.set_enabled(Some(false)).unwrap();
+    // config
+    //     .scouting
+    //     .multicast
+    //     .set_listen(Some(ModeDependentValue::Unique(false)))
+    //     .unwrap();
+    // config.scouting.gossip.set_enabled(Some(false)).unwrap();
+    // config
+    //     .transport
+    //     .unicast
+    //     .set_compression(CompressionUnicastConf::new(true).unwrap())
+    //     .unwrap();
+    // config
+    //     .transport
+    //     .link
+    //     .rx
+    //     .set_buffer_size(134_217_728)
+    //     .unwrap(); //128MiB
 
     {
 
