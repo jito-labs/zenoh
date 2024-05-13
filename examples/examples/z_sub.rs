@@ -12,7 +12,7 @@
 //   ZettaScale Zenoh Team, <zenoh@zettascale.tech>
 //
 use clap::Parser;
-use zenoh::config::Config;
+use zenoh::config::{CompressionUnicastConf, Config, ModeDependentValue, QoSUnicastConf, TransportConf};
 use zenoh::prelude::r#async::*;
 use zenoh_examples::CommonArgs;
 
@@ -22,11 +22,19 @@ async fn main() {
     zenoh_util::try_init_log_from_env();
 
     let (mut config, key_expr) = parse_args();
+    let mut config = Config::default();
+    config.connect.endpoints=vec![EndPoint::new("tcp", "192.168.1.50:12000", "", "").unwrap()];
+    config.transport.unicast.set_lowlatency(true).unwrap();
+    config
+        .transport
+        .unicast
+        .set_qos(QoSUnicastConf::new(false).unwrap())
+        .unwrap();
 
     // A probing procedure for shared memory is performed upon session opening. To enable `z_pub_shm` to operate
     // over shared memory (and to not fallback on network mode), shared memory needs to be enabled also on the
     // subscriber side. By doing so, the probing procedure will succeed and shared memory will operate as expected.
-    config.transport.shared_memory.set_enabled(true).unwrap();
+    // config.transport.shared_memory.set_enabled(true).unwrap();
 
     println!("Opening session...");
     let session = zenoh::open(config).res().await.unwrap();
