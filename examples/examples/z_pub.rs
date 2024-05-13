@@ -23,7 +23,10 @@ async fn main() {
     zenoh_util::try_init_log_from_env();
 
     let (config, key_expr, value, attachment) = parse_args();
-
+    let mut config = Config::default();
+    config.listen.endpoints=vec![EndPoint::new("tcp", "0.0.0.0:12000", "", "").unwrap()];
+config.scouting.multicast.set_enabled(Some(false)).unwrap();
+    config.scouting.gossip.set_enabled(Some(false)).unwrap();
     println!("Opening session...");
     let session = zenoh::open(config).res().await.unwrap();
 
@@ -36,14 +39,14 @@ async fn main() {
         let buf = format!("[{idx:4}] {value}");
         println!("Putting Data ('{}': '{}')...", &key_expr, buf);
         let mut put = publisher.put(buf);
-        if let Some(attachment) = &attachment {
-            put = put.with_attachment(
-                attachment
-                    .split('&')
-                    .map(|pair| split_once(pair, '='))
-                    .collect(),
-            )
-        }
+        // if let Some(attachment) = &attachment {
+        //     put = put.with_attachment(
+        //         attachment
+        //             .split('&')
+        //             .map(|pair| split_once(pair, '='))
+        //             .collect(),
+        //     )
+        // }
         put.res().await.unwrap();
     }
 }
