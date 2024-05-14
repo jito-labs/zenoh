@@ -13,7 +13,7 @@
 //
 use clap::Parser;
 use std::time::Duration;
-use zenoh::config::Config;
+use zenoh::config::{CompressionUnicastConf, Config, ModeDependentValue, QoSUnicastConf};
 use zenoh::prelude::r#async::*;
 use zenoh_examples::CommonArgs;
 
@@ -22,7 +22,12 @@ async fn main() {
     // Initiate logging
     zenoh_util::try_init_log_from_env();
 
-    let (config, key_expr, value, attachment) = parse_args();
+    let (mut config, key_expr, value, attachment) = parse_args();
+    config
+        .transport
+        .unicast
+        .set_compression(CompressionUnicastConf::new(true).unwrap())
+        .unwrap();
 
     println!("Opening session...");
     let session = zenoh::open(config).res().await.unwrap();

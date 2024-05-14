@@ -12,7 +12,7 @@
 //   ZettaScale Zenoh Team, <zenoh@zettascale.tech>
 //
 use clap::Parser;
-use zenoh::config::Config;
+use zenoh::config::{CompressionUnicastConf, Config};
 use zenoh::prelude::r#async::*;
 use zenoh_examples::CommonArgs;
 
@@ -22,6 +22,11 @@ async fn main() {
     zenoh_util::try_init_log_from_env();
 
     let (mut config, key_expr) = parse_args();
+    config
+        .transport
+        .unicast
+        .set_compression(CompressionUnicastConf::new(true).unwrap())
+        .unwrap();
 
     // A probing procedure for shared memory is performed upon session opening. To enable `z_pub_shm` to operate
     // over shared memory (and to not fallback on network mode), shared memory needs to be enabled also on the
