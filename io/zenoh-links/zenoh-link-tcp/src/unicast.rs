@@ -225,8 +225,8 @@ impl LinkManagerUnicastTcp {
         // Build a TcpStream from TcpSocket
         // https://docs.rs/tokio/latest/tokio/net/struct.TcpSocket.html
         println!("{dst_addr} send: {}, recv: {}, nodelay:{}",socket.send_buffer_size().unwrap(), socket.recv_buffer_size().unwrap(), socket.nodelay().unwrap());
-        socket.set_send_buffer_size(8 * 1024 * 1024).unwrap();
-        socket.set_recv_buffer_size(8 * 1024 * 1024).unwrap();
+        socket.set_send_buffer_size(128 * 1024 * 1024).unwrap();
+        socket.set_recv_buffer_size(128 * 1024 * 1024).unwrap();
         println!("{dst_addr} send: {}, recv: {}, nodelay:{}",socket.send_buffer_size().unwrap(), socket.recv_buffer_size().unwrap(), socket.nodelay().unwrap());
         let stream = socket
             .connect(*dst_addr)
